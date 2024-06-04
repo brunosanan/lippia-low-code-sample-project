@@ -28,6 +28,7 @@ Scenario: create project in a workspace
   And set value {{nombre}} of key name in body jsons/bodies/bodyProject.json
   When execute method POST
   Then the status code should be 201
+  * define projectID = response.id
 
 @CreateProjectError @errors
 Scenario Outline: create project in a workspace fallido por <motivo>
@@ -70,8 +71,8 @@ Scenario Outline: delete project in a workspace <motivo>
 Examples:
   | motivo                    | statusCode | apiKey                                           | endpoint                                              |
   | No autorizado             | 401        | AAU5NzYwZTMtNDdjMy00ZDgyLThmNmYtMTc0YmViYWJjNjZZ | /workspaces/{{workspaceID}}/projects/{{projectID}}    |
-  | Proyecto no encontrado    | 404        | Y2U5NzYwZTMtNDdjMy00ZDgyLThmNmYtMTc0YmViYWJjNjg5 | /workspaces/{{workspaceID}}/project/{{projectID}}     |
-  | Bad Request               | 400        | Y2U5NzYwZTMtNDdjMy00ZDgyLThmNmYtMTc0YmViYWJjNjg5 | /workspaces/{{workspaceID}}/projects/;                |
+  | Proyecto no encontrado    | 404        | NDlhOThjM2UtOTFhYi00MmQ3LTg0MzQtM2RhZDJlZjE2NjVm | /workspaces/{{workspaceID}}/project/{{projectID}}     |
+  | Bad Request               | 400        | NDlhOThjM2UtOTFhYi00MmQ3LTg0MzQtM2RhZDJlZjE2NjVm | /workspaces/{{workspaceID}}/projects/;                |
 
 @GetProjectById
 Scenario: get project by id
@@ -91,8 +92,8 @@ Scenario Outline: delete project in a workspace <motivo>
 Examples:
   | motivo                    | statusCode | apiKey                                           | endpoint                                              |
   | No autorizado             | 401        | AAU5NzYwZTMtNDdjMy00ZDgyLThmNmYtMTc0YmViYWJjNjZZ | /workspaces/{{workspaceID}}/projects/{{projectID}}    |
-  | Proyecto no encontrado    | 404        | Y2U5NzYwZTMtNDdjMy00ZDgyLThmNmYtMTc0YmViYWJjNjg5 | /workspaces/{{workspaceID}}/project/{{projectID}}     |
-  | Bad Request               | 400        | Y2U5NzYwZTMtNDdjMy00ZDgyLThmNmYtMTc0YmViYWJjNjg5 | /workspaces/{{workspaceID}}/projects/;                |
+  | Proyecto no encontrado    | 404        | NDlhOThjM2UtOTFhYi00MmQ3LTg0MzQtM2RhZDJlZjE2NjVm | /workspaces/{{workspaceID}}/project/{{projectID}}     |
+  | Bad Request               | 400        | NDlhOThjM2UtOTFhYi00MmQ3LTg0MzQtM2RhZDJlZjE2NjVm | /workspaces/{{workspaceID}}/projects/;                |
 
 
 @GetProjectByIdError @errors
@@ -106,8 +107,8 @@ Scenario Outline: get project by id erroneo <motivo>
 Examples:
   | motivo                    | statusCode | apiKey                                           | endpoint                                              |
   | No autorizado             | 401        | AAU5NzYwZTMtNDdjMy00ZDgyLThmNmYtMTc0YmViYWJjNjZZ | /workspaces/{{workspaceID}}/projects/{{projectID}}    |
-  | Proyecto no encontrado    | 404        | Y2U5NzYwZTMtNDdjMy00ZDgyLThmNmYtMTc0YmViYWJjNjg5 | /workspaces/{{workspaceID}}/project/{{projectID}}     |
-  | Bad Request               | 400        | Y2U5NzYwZTMtNDdjMy00ZDgyLThmNmYtMTc0YmViYWJjNjg5 | /workspaces/{{workspaceID}}/projects/;                |
+  | Proyecto no encontrado    | 404        | NDlhOThjM2UtOTFhYi00MmQ3LTg0MzQtM2RhZDJlZjE2NjVm | /workspaces/{{workspaceID}}/project/{{projectID}}     |
+  | Bad Request               | 400        | NDlhOThjM2UtOTFhYi00MmQ3LTg0MzQtM2RhZDJlZjE2NjVm | /workspaces/{{workspaceID}}/projects/;                |
 
 
 
@@ -135,9 +136,42 @@ Scenario: get project by id
 Examples:
   | motivo                    | statusCode | apiKey                                           | endpoint                                              |
   | No autorizado             | 401        | AAU5NzYwZTMtNDdjMy00ZDgyLThmNmYtMTc0YmViYWJjNjZZ | /workspaces/{{workspaceID}}/projects/{{projectID}}    |
-  | Proyecto no encontrado    | 404        | Y2U5NzYwZTMtNDdjMy00ZDgyLThmNmYtMTc0YmViYWJjNjg5 | /workspaces/{{workspaceID}}/project/{{projectID}}     |
-  | Bad Request               | 400        | Y2U5NzYwZTMtNDdjMy00ZDgyLThmNmYtMTc0YmViYWJjNjg5 | /workspaces/{{workspaceID}}/projects/;                |
+  | Proyecto no encontrado    | 404        | NDlhOThjM2UtOTFhYi00MmQ3LTg0MzQtM2RhZDJlZjE2NjVm | /workspaces/{{workspaceID}}/project/{{projectID}}     |
+  | Bad Request               | 400        | NDlhOThjM2UtOTFhYi00MmQ3LTg0MzQtM2RhZDJlZjE2NjVm | /workspaces/{{workspaceID}}/projects/;                |
+
+@UpdateProjectEstimate #no funciona error: Call Step has not been executed, track: null ()
+Scenario: update project estimate
+  Given call clockify.feature@getProjectID
+  And endpoint v1/workspaces/{{workspaceID}}/projects/{{projectID}}/estimate
+  And set value false of key budgetEstimate.active in body jsons/bodies/bodyEstimate.json
+  When execute method PATCH
+  Then the status code should be 200
+
+@getUserID's
+Scenario: get user id
+  And call clockify.feature@getWorkspaceID
+  * define userID's = response[0]
+
+@UpdateProjectMemberships #no funciona error: Call Step has not been executed, track: null ()
+Scenario: update project memberships
+  Given call clockify.feature@CreateProject
+  Given call clockify.feature@getUserID's
+  And endpoint v1/workspaces/{workspaceID}/projects/{projectID}/memberships
+  And set value {{userID's[1]}} of key memberships[0] in body jsons/bodies/bodyMembership.json
+  When execute method PATCH
+  Then the status code should be 200
 
 
+@getUserID'sProject
+Scenario: get user id
+  And call clockify.feature@GetProjectById
+  * define userID's = response.memberships
 
 
+@AssignProjectMemberships
+Scenario: assign users project memberships
+  Given call clockify.feature@getProjectID
+  And endpoint v1/workspaces/{workspaceID}/projects/{projectID}/memberships
+  And set value 662006d338907a5b7a42bb6d of key userIds[0] in body jsons/bodies/bodyMembershipPOST.json
+  When execute method POST
+  Then the status code should be 200
